@@ -1,17 +1,17 @@
 --[[ Field widgets: one pooled row per sheet field, built once per field type and reused on redraw.
 Types: player, players, pair, markplayer, choice, text (see Core/Catalog.lua).
 Left-click a slot to pick, right-click to clear. Inherited values are tagged "(General)".
-Renamable slots rename by clicking their label.
+Renamable slots (white labels) rename by clicking their label.
 Events: none. SavedVariables: FRA_DB.plans through ns.Plan. ]]
 
 local _, ns = ...
 
-local Plan = ns.Plan
+local Plan, C = ns.Plan, ns.Colors
 local Fields = {}
 ns.Fields = Fields
 
-local LABEL_WIDTH, ROW_WIDTH, VALUE_X = 130, 430, 134
-local EMPTY = "|cff606060-|r"
+local LABEL_WIDTH, ROW_WIDTH, VALUE_X = 170, 586, 180
+local EMPTY = "|cff4d525c-|r"
 
 local Build, Update = {}, {}
 local pools = {}
@@ -24,7 +24,7 @@ local function PlayerText(name)
 end
 
 local function Tagged(text, inherited)
-	return inherited and (text .. " |cff808080(General)|r") or text
+	return inherited and (text .. "  |cff8c94a3(General)|r") or text
 end
 
 -- The row's raid, page and field are read at click time because rows are pooled and reused.
@@ -59,17 +59,15 @@ local function StartRename(label)
 	local row = label:GetParent()
 	local edit = row.labelEdit
 	if not edit then
-		edit = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
-		edit:SetSize(LABEL_WIDTH - 12, 20)
-		edit:SetPoint("LEFT", 6, 0)
-		edit:SetAutoFocus(false)
+		edit = ns.CreateEditBox(row, LABEL_WIDTH - 10)
+		edit:SetPoint("LEFT")
 		edit:SetMaxLetters(40)
 		edit:SetScript("OnEnterPressed", edit.ClearFocus)
 		edit:SetScript("OnEscapePressed", function(self)
 			self.cancelled = true
 			self:ClearFocus()
 		end)
-		edit:SetScript("OnEditFocusLost", FinishRename)
+		edit:HookScript("OnEditFocusLost", FinishRename)
 		row.labelEdit = edit
 	end
 	label:Hide()
@@ -90,9 +88,8 @@ local function BuildBase(row)
 	local label = CreateFrame("Button", nil, row)
 	label:SetSize(LABEL_WIDTH, 22)
 	label:SetPoint("LEFT")
-	label.text = label:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+	label.text = ns.Text(label)
 	label.text:SetAllPoints()
-	label.text:SetJustifyH("LEFT")
 	label.text:SetWordWrap(false)
 	label:SetScript("OnClick", StartRename)
 	label:SetScript("OnEnter", ShowRenameTip)
@@ -127,7 +124,7 @@ local function ClearPart(button, key)
 end
 
 function Build.player(row)
-	row.value = ns.CreateValueButton(row, 220)
+	row.value = ns.CreateValueButton(row, 260)
 	row.value:SetPoint("LEFT", VALUE_X, 0)
 	row.value:SetScript("OnClick", function(self, button)
 		local raid, page, field = Context(row)
@@ -150,7 +147,7 @@ function Update.player(row)
 end
 
 function Build.players(row)
-	row.value = ns.CreateValueButton(row, 290)
+	row.value = ns.CreateValueButton(row, 400)
 	row.value:SetPoint("LEFT", VALUE_X, 0)
 	row.value:SetScript("OnClick", function(self, button)
 		local raid, page, field = Context(row)
@@ -181,13 +178,13 @@ function Update.players(row)
 end
 
 function Build.pair(row)
-	row.a = ns.CreateValueButton(row, 130)
+	row.a = ns.CreateValueButton(row, 180)
 	row.a:SetPoint("LEFT", VALUE_X, 0)
-	row.on = row:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-	row.on:SetPoint("LEFT", row.a, "RIGHT", 6, 0)
+	row.on = ns.Text(row, "GameFontHighlightSmall", C.dim)
+	row.on:SetPoint("LEFT", row.a, "RIGHT", 8, 0)
 	row.on:SetText("on")
-	row.b = ns.CreateValueButton(row, 130)
-	row.b:SetPoint("LEFT", row.on, "RIGHT", 6, 0)
+	row.b = ns.CreateValueButton(row, 180)
+	row.b:SetPoint("LEFT", row.on, "RIGHT", 8, 0)
 	row.a:SetScript("OnClick", function(self, button)
 		if button == "RightButton" then return ClearPart(self, "a") end
 		PickPart(self, "a", row.field.filter)
@@ -225,7 +222,7 @@ local function MarkerMenu(button)
 end
 
 function Build.markplayer(row)
-	row.mark = ns.CreateValueButton(row, 24)
+	row.mark = ns.CreateValueButton(row, 26)
 	row.mark:SetPoint("LEFT", VALUE_X, 0)
 	row.mark.text:SetJustifyH("CENTER")
 	row.mark.text:SetPoint("LEFT", 0, 0)
@@ -234,7 +231,7 @@ function Build.markplayer(row)
 		if button == "RightButton" then return SetMarker(self, nil) end
 		MarkerMenu(self)
 	end)
-	row.value = ns.CreateValueButton(row, 192)
+	row.value = ns.CreateValueButton(row, 230)
 	row.value:SetPoint("LEFT", row.mark, "RIGHT", 4, 0)
 	row.value:SetScript("OnClick", function(self, button)
 		if button == "RightButton" then return ClearPart(self, "p") end
@@ -252,7 +249,7 @@ end
 -- Fixed-choice dropdown --------------------------------------------------------
 
 function Build.choice(row)
-	row.value = ns.CreateValueButton(row, 200)
+	row.value = ns.CreateValueButton(row, 220)
 	row.value:SetPoint("LEFT", VALUE_X, 0)
 	row.value:SetScript("OnClick", function(self, button)
 		local raid, page, field = Context(row)
@@ -282,17 +279,15 @@ end
 -- Free text --------------------------------------------------------------------
 
 function Build.text(row)
-	local edit = CreateFrame("EditBox", nil, row, "InputBoxTemplate")
-	edit:SetSize(284, 20)
-	edit:SetPoint("LEFT", VALUE_X + 6, 0)
-	edit:SetAutoFocus(false)
+	local edit = ns.CreateEditBox(row, 400)
+	edit:SetPoint("LEFT", VALUE_X, 0)
 	edit:SetMaxLetters(200)
 	edit:SetScript("OnEnterPressed", edit.ClearFocus)
 	edit:SetScript("OnEscapePressed", function(self)
 		self:SetText(row.saved)
 		self:ClearFocus()
 	end)
-	edit:SetScript("OnEditFocusLost", function(self)
+	edit:HookScript("OnEditFocusLost", function(self)
 		local raid, page, field = Context(row)
 		Plan.Set(raid, page, field, strtrim(self:GetText()))
 	end)
@@ -323,6 +318,7 @@ function Fields.Acquire(parent, raid, page, field)
 	row.raid, row.page, row.field = raid, page, field
 	row.label.text:SetText(Plan.Label(raid, page, field))
 	row.label:EnableMouse(field.renamable or false)
+	row.label.text:SetTextColor(unpack(field.renamable and C.text or C.dim))
 	row.label:Show()
 	if row.labelEdit then row.labelEdit:Hide() end
 	Update[field.type](row)

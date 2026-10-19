@@ -1,35 +1,140 @@
---[[ Shared widgets: flat list buttons, value boxes for sheet slots, and a yes/no confirmation.
+--[[ Shared widgets and the flat look: color tokens, flat panels, push and toggle buttons, list rows,
+slot boxes, edit boxes, title-bar icon buttons, and a yes/no confirmation.
 Events: none. SavedVariables: none. ]]
 
 local _, ns = ...
 
--- Flat clickable row: left-aligned text, hover highlight, and a .selected texture to show/hide.
-function ns.CreateListButton(parent, width, height)
-	local button = CreateFrame("Button", nil, parent)
-	button:SetSize(width, height)
-	button.selected = button:CreateTexture(nil, "BACKGROUND")
-	button.selected:SetAllPoints()
-	button.selected:SetColorTexture(1, 0.82, 0, 0.18)
-	button.selected:Hide()
-	local highlight = button:CreateTexture(nil, "HIGHLIGHT")
-	highlight:SetAllPoints()
-	highlight:SetColorTexture(1, 1, 1, 0.08)
-	button.text = button:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-	button.text:SetPoint("LEFT", 6, 0)
-	button.text:SetPoint("RIGHT", -6, 0)
-	button.text:SetJustifyH("LEFT")
-	button.text:SetWordWrap(false)
+local WHITE = "Interface\\Buttons\\WHITE8X8"
+
+-- Color tokens ({ r, g, b, a }) used by every screen, so the look can be tuned in one place.
+local C = {
+	window = { 0.055, 0.06, 0.075, 0.97 },
+	titlebar = { 0.08, 0.085, 0.105, 1 },
+	sidebar = { 0.075, 0.08, 0.1, 1 },
+	card = { 0.1, 0.105, 0.13, 1 },
+	cardHead = { 0.13, 0.135, 0.165, 1 },
+	field = { 0.035, 0.04, 0.05, 1 },
+	border = { 1, 1, 1, 0.08 },
+	hover = { 1, 1, 1, 0.06 },
+	accent = { 0.27, 0.68, 1, 1 },
+	accentDim = { 0.27, 0.68, 1, 0.16 },
+	text = { 0.92, 0.93, 0.95, 1 },
+	dim = { 0.55, 0.58, 0.64, 1 },
+}
+ns.Colors = C
+
+-- Solid color texture covering frame. Returns the texture.
+function ns.Fill(frame, color, layer, subLevel)
+	local texture = frame:CreateTexture(nil, layer or "BACKGROUND", nil, subLevel)
+	texture:SetAllPoints()
+	texture:SetColorTexture(unpack(color))
+	return texture
+end
+
+-- Font string with a template and an optional color token.
+function ns.Text(parent, template, color)
+	local text = parent:CreateFontString(nil, "ARTWORK", template or "GameFontHighlightSmall")
+	if color then text:SetTextColor(unpack(color)) end
+	text:SetJustifyH("LEFT")
+	return text
+end
+
+-- Flat panel: solid background with a 1 px border. frame must inherit BackdropTemplate.
+function ns.StylePanel(frame, color)
+	frame:SetBackdrop({ bgFile = WHITE, edgeFile = WHITE, edgeSize = 1 })
+	frame:SetBackdropColor(unpack(color or C.window))
+	frame:SetBackdropBorderColor(unpack(C.border))
+end
+
+-- Show a flat button as on (accent) or off.
+function ns.SetActive(button, on)
+	button:SetBackdropColor(unpack(on and C.accentDim or C.card))
+	button:SetBackdropBorderColor(unpack(on and C.accent or C.border))
+end
+
+-- Flat push button. Toggle buttons call ns.SetActive to show their state.
+function ns.CreateButton(parent, text, width)
+	local button = CreateFrame("Button", nil, parent, "BackdropTemplate")
+	button:SetSize(width, 24)
+	ns.StylePanel(button, C.card)
+	ns.Fill(button, C.hover, "HIGHLIGHT")
+	button:SetNormalFontObject("GameFontHighlightSmall")
+	button:SetHighlightFontObject("GameFontHighlightSmall")
+	button:SetText(text)
 	return button
 end
 
--- Dark box for a sheet slot, so empty slots still read as clickable. Takes left and right clicks.
+-- Add the list-row look to button: hover tint, a .text label, and an accent bar plus tint when
+-- selected (see ns.SetSelected). Used for sidebar entries, roster slots and picker entries.
+function ns.StyleListButton(button)
+	button.selected = ns.Fill(button, C.accentDim)
+	button.bar = button:CreateTexture(nil, "ARTWORK")
+	button.bar:SetPoint("TOPLEFT")
+	button.bar:SetPoint("BOTTOMLEFT")
+	button.bar:SetWidth(2)
+	button.bar:SetColorTexture(unpack(C.accent))
+	ns.Fill(button, C.hover, "HIGHLIGHT")
+	button.text = ns.Text(button)
+	button.text:SetPoint("LEFT", 10, 0)
+	button.text:SetPoint("RIGHT", -6, 0)
+	button.text:SetWordWrap(false)
+	ns.SetSelected(button, false)
+end
+
+function ns.SetSelected(button, on)
+	button.selected:SetShown(on)
+	button.bar:SetShown(on)
+end
+
+function ns.CreateListButton(parent, width, height)
+	local button = CreateFrame("Button", nil, parent)
+	button:SetSize(width, height)
+	ns.StyleListButton(button)
+	return button
+end
+
+-- Dark box for a sheet slot, so empty slots still read as clickable. The border lights up on hover.
+-- Takes left and right clicks.
 function ns.CreateValueButton(parent, width)
-	local button = ns.CreateListButton(parent, width, 20)
-	local background = button:CreateTexture(nil, "BACKGROUND", nil, -1)
-	background:SetAllPoints()
-	background:SetColorTexture(0, 0, 0, 0.45)
-	button.text:SetFontObject("GameFontHighlightSmall")
+	local button = CreateFrame("Button", nil, parent, "BackdropTemplate")
+	button:SetSize(width, 22)
+	ns.StylePanel(button, C.field)
+	button:SetScript("OnEnter", function(self) self:SetBackdropBorderColor(unpack(C.accent)) end)
+	button:SetScript("OnLeave", function(self) self:SetBackdropBorderColor(unpack(C.border)) end)
+	button.text = ns.Text(button)
+	button.text:SetPoint("LEFT", 8, 0)
+	button.text:SetPoint("RIGHT", -8, 0)
+	button.text:SetWordWrap(false)
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	return button
+end
+
+-- Flat single-line edit box. Its border lights up while focused; callers add their own focus-lost
+-- logic with HookScript so this highlight keeps working.
+function ns.CreateEditBox(parent, width)
+	local edit = CreateFrame("EditBox", nil, parent, "BackdropTemplate")
+	edit:SetSize(width, 22)
+	ns.StylePanel(edit, C.field)
+	edit:SetFontObject("GameFontHighlightSmall")
+	edit:SetTextInsets(8, 8, 0, 0)
+	edit:SetAutoFocus(false)
+	edit:SetScript("OnEditFocusGained", function(self) self:SetBackdropBorderColor(unpack(C.accent)) end)
+	edit:SetScript("OnEditFocusLost", function(self) self:SetBackdropBorderColor(unpack(C.border)) end)
+	return edit
+end
+
+-- Title-bar button drawn from thin lines: kind "close" (an X) or "minimize" (a dash).
+function ns.CreateIconButton(parent, kind)
+	local button = CreateFrame("Button", nil, parent)
+	button:SetSize(28, 28)
+	ns.Fill(button, C.hover, "HIGHLIGHT")
+	for _, angle in ipairs(kind == "close" and { 45, -45 } or { 0 }) do
+		local line = button:CreateTexture(nil, "ARTWORK")
+		line:SetSize(12, 2)
+		line:SetPoint("CENTER")
+		line:SetColorTexture(unpack(C.dim))
+		line:SetRotation(math.rad(angle))
+	end
 	return button
 end
 

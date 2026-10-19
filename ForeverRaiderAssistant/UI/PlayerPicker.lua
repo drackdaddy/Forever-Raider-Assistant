@@ -75,76 +75,65 @@ local function Clear()
 	end
 end
 
+-- Pooled entry setup; picked players get the accent bar and tint.
 local function InitEntry(button, item)
 	if not button.text then
-		button:SetHeight(20)
-		button.check = button:CreateTexture(nil, "ARTWORK")
-		button.check:SetSize(16, 16)
-		button.check:SetPoint("LEFT", 2, 0)
-		button.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
-		button.text = button:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-		button.text:SetPoint("LEFT", 20, 0)
-		button.text:SetPoint("RIGHT", -4, 0)
-		button.text:SetJustifyH("LEFT")
-		local highlight = button:CreateTexture(nil, "HIGHLIGHT")
-		highlight:SetAllPoints()
-		highlight:SetColorTexture(1, 1, 1, 0.1)
+		ns.StyleListButton(button)
 		button:SetScript("OnClick", function(self) Pick(self.name) end)
 	end
 	button.name = item.name
 	button.text:SetText(item.label)
-	button.check:SetShown(item.selected or false)
+	ns.SetSelected(button, item.selected or false)
 end
 
 local function Build()
-	picker = CreateFrame("Frame", "FRAPlayerPicker", UIParent, "TooltipBackdropTemplate")
-	picker:SetSize(230, 310)
+	picker = CreateFrame("Frame", "FRAPlayerPicker", UIParent, "BackdropTemplate")
+	ns.StylePanel(picker)
+	picker:SetBackdropBorderColor(unpack(ns.Colors.accent))
+	picker:SetSize(240, 320)
 	picker:SetFrameStrata("DIALOG")
 	picker:SetToplevel(true)
 	picker:SetClampedToScreen(true)
 	picker:EnableMouse(true)
 	tinsert(UISpecialFrames, "FRAPlayerPicker")
 
-	picker.title = picker:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	picker.title:SetPoint("TOPLEFT", 12, -10)
+	picker.title = ns.Text(picker, "GameFontHighlight")
+	picker.title:SetPoint("TOPLEFT", 12, -12)
 
-	local close = CreateFrame("Button", nil, picker, "UIPanelCloseButton")
-	close:SetPoint("TOPRIGHT", 2, 2)
+	local close = ns.CreateIconButton(picker, "close")
+	close:SetPoint("TOPRIGHT", -4, -4)
+	close:SetScript("OnClick", function() picker:Hide() end)
 
 	picker.search = CreateFrame("EditBox", nil, picker, "SearchBoxTemplate")
 	picker.search:SetSize(200, 20)
-	picker.search:SetPoint("TOPLEFT", 16, -30)
+	picker.search:SetPoint("TOPLEFT", 16, -36)
 	picker.search:SetAutoFocus(false)
 	picker.search:HookScript("OnTextChanged", function()
 		if picker:IsShown() then Rebuild() end
 	end)
 
 	picker.scrollBox = CreateFrame("Frame", nil, picker, "WowScrollBoxList")
-	picker.scrollBox:SetPoint("TOPLEFT", 10, -58)
-	picker.scrollBox:SetPoint("BOTTOMRIGHT", -26, 40)
+	picker.scrollBox:SetPoint("TOPLEFT", 8, -64)
+	picker.scrollBox:SetPoint("BOTTOMRIGHT", -24, 44)
 	local scrollBar = CreateFrame("EventFrame", nil, picker, "MinimalScrollBar")
 	scrollBar:SetPoint("TOPLEFT", picker.scrollBox, "TOPRIGHT", 6, 0)
 	scrollBar:SetPoint("BOTTOMLEFT", picker.scrollBox, "BOTTOMRIGHT", 6, 0)
 	local view = CreateScrollBoxListLinearView()
-	view:SetElementExtent(20)
+	view:SetElementExtent(22)
 	view:SetElementInitializer("Button", InitEntry)
 	ScrollUtil.InitScrollBoxListWithScrollBar(picker.scrollBox, scrollBar, view)
 
-	picker.empty = picker:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-	picker.empty:SetPoint("TOPLEFT", picker.scrollBox, 4, -4)
+	picker.empty = ns.Text(picker, "GameFontHighlightSmall", ns.Colors.dim)
+	picker.empty:SetPoint("TOPLEFT", picker.scrollBox, 8, -6)
 	picker.empty:SetPoint("RIGHT", picker.scrollBox, -4, 0)
-	picker.empty:SetJustifyH("LEFT")
 
-	local clear = CreateFrame("Button", nil, picker, "UIPanelButtonTemplate")
-	clear:SetSize(90, 22)
+	local clear = ns.CreateButton(picker, "Clear", 100)
 	clear:SetPoint("BOTTOMLEFT", 12, 12)
-	clear:SetText("Clear")
 	clear:SetScript("OnClick", Clear)
 
-	picker.done = CreateFrame("Button", nil, picker, "UIPanelButtonTemplate")
-	picker.done:SetSize(90, 22)
+	picker.done = ns.CreateButton(picker, DONE, 100)
 	picker.done:SetPoint("BOTTOMRIGHT", -12, 12)
-	picker.done:SetText(DONE)
+	ns.SetActive(picker.done, true)
 	picker.done:SetScript("OnClick", function() picker:Hide() end)
 end
 

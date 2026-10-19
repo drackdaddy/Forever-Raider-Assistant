@@ -4,9 +4,6 @@ Events: PLAYER_LOGIN. SavedVariables: FRA_CharDB.minimapAngle. ]]
 
 local _, ns = ...
 
-local TITLE = "Forever Raider Assistant"
-local ICON = "Interface\\Icons\\INV_Misc_Note_01"
-
 -- Place the button on a circle just outside the minimap's edge at the saved angle.
 local function Place(button)
 	local angle = math.rad(ns.char.minimapAngle)
@@ -26,7 +23,7 @@ end
 
 local function ShowTooltip(button)
 	GameTooltip:SetOwner(button, "ANCHOR_LEFT")
-	GameTooltip:SetText(TITLE)
+	GameTooltip:SetText(ns.TITLE)
 	GameTooltip:AddLine("Left-click: open or close the planner", 1, 1, 1)
 	GameTooltip:AddLine("Drag: move this button", 1, 1, 1)
 	GameTooltip:Show()
@@ -48,7 +45,7 @@ local function CreateMinimapButton()
 	local icon = button:CreateTexture(nil, "ARTWORK")
 	icon:SetSize(18, 18)
 	icon:SetPoint("CENTER")
-	icon:SetTexture(ICON)
+	icon:SetTexture(ns.ICON)
 	local border = button:CreateTexture(nil, "OVERLAY")
 	border:SetSize(52, 52)
 	border:SetPoint("TOPLEFT")
@@ -72,8 +69,8 @@ ns.On("PLAYER_LOGIN", function()
 	-- Forever reskinned the minimap header, so only register if the compartment is present.
 	if not AddonCompartmentFrame then return end
 	AddonCompartmentFrame:RegisterAddon({
-		text = TITLE,
-		icon = ICON,
+		text = ns.TITLE,
+		icon = ns.ICON,
 		notCheckable = true,
 		func = ns.ToggleMain,
 	})

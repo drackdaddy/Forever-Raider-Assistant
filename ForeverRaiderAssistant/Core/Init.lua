@@ -4,6 +4,9 @@ SavedVariables: none. ]]
 
 local _, ns = ...
 
+ns.TITLE = "Forever Raider Assistant"
+ns.ICON = "Interface\\Icons\\INV_Misc_Note_01"
+
 -- One event frame for the whole addon. Features add handlers with ns.On.
 local eventFrame = CreateFrame("Frame")
 local handlers = {}
@@ -71,7 +74,7 @@ function ns.MarkDirty(name)
 end
 
 function ns.Print(msg)
-	print("|cff33ccffForever Raider Assistant|r: " .. msg)
+	print("|cff45adff" .. ns.TITLE .. "|r: " .. msg)
 end
 
 -- Short display name, class-colored; grey when dim is true or the class is unknown.

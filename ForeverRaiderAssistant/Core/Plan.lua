@@ -1,6 +1,7 @@
 --[[ Plan storage: read and write sheet values, renamed slot labels and the chosen variant for each
 raid page. Boss and Trash fields with an "inherit" key show the General value until they set their own.
-Writes that change nothing are skipped, so views are not redrawn for them.
+Writes that change nothing are skipped, so views are not redrawn for them. Every change redraws the
+sheet and the sidebar (whose page badges count filled slots).
 Events: none. SavedVariables: FRA_DB.plans[instanceID].pages[pageKey] = { values, labels, variant }. ]]
 
 local _, ns = ...
@@ -22,6 +23,12 @@ local function PageData(raid, key, create)
 		raidData.pages[key] = page
 	end
 	return page
+end
+
+-- Redraw the views that show plan data.
+local function Changed()
+	ns.MarkDirty("raids")
+	ns.MarkDirty("nav")
 end
 
 local function IsEmpty(v)
@@ -58,7 +65,17 @@ function Plan.Set(raid, page, field, value)
 	local data = PageData(raid, page.key, value ~= nil)
 	if not data or Same(data.values[field.id], value) then return end
 	data.values[field.id] = value
-	ns.MarkDirty("raids")
+	Changed()
+end
+
+-- Number of fields on the page with their own value (inherited values are not counted).
+function Plan.Count(raid, page)
+	local data = PageData(raid, page.key)
+	local count = 0
+	for _ in pairs(data and data.values or {}) do
+		count = count + 1
+	end
+	return count
 end
 
 function Plan.Label(raid, page, field)
@@ -72,7 +89,7 @@ function Plan.SetLabel(raid, page, field, text)
 	local data = PageData(raid, page.key, text ~= nil)
 	if not data or data.labels[field.id] == text then return end
 	data.labels[field.id] = text
-	ns.MarkDirty("raids")
+	Changed()
 end
 
 -- Selected variant key for a page with variants (the first one by default).
@@ -85,7 +102,7 @@ function Plan.SetVariant(raid, page, key)
 	local data = PageData(raid, page.key, true)
 	if data.variant == key then return end
 	data.variant = key
-	ns.MarkDirty("raids")
+	Changed()
 end
 
 -- Clear every value on one page. Renamed labels and the variant stay.
@@ -93,7 +110,7 @@ function Plan.ClearPage(raid, page)
 	local data = PageData(raid, page.key)
 	if data then
 		wipe(data.values)
-		ns.MarkDirty("raids")
+		Changed()
 	end
 end
 
@@ -104,7 +121,7 @@ function Plan.ClearRaid(raid)
 		for _, data in pairs(raidData.pages) do
 			wipe(data.values)
 		end
-		ns.MarkDirty("raids")
+		Changed()
 	end
 end
 
@@ -113,6 +130,6 @@ function Plan.ResetPage(raid, page)
 	local raidData = ns.db.plans[raid.instanceID]
 	if raidData and raidData.pages[page.key] then
 		raidData.pages[page.key] = nil
-		ns.MarkDirty("raids")
+		Changed()
 	end
 end

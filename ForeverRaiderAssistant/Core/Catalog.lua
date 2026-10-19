@@ -1,5 +1,6 @@
 --[[ Raid and boss catalog: raid data files register here, and every raid gets a General page and a
-Trash page ahead of its bosses (in kill order). Pages are keyed "general", "trash" or the encounter ID.
+Trash page ahead of its bosses (in kill order). Pages are keyed "general", "trash", or the boss's
+encounter ID (or its own key, for bosses with no encounter, such as the Generic raid's).
 The UI reads only this catalog, so adding a raid means adding a data file.
 
 Page shape: { key, name, hint, phases = { "label", ... }, variants = { { key, text }, ... },
@@ -97,14 +98,14 @@ local function AddPage(raid, page, key, name)
 	raid.pageByKey[key] = page
 end
 
--- Register a raid: { instanceID, name, size, bosses = { { encounterID, name, targets, hint, page } } }.
+-- Register a raid: { instanceID, name, size, bosses = { { encounterID or key, name, targets, hint, page } } }.
 -- A boss without its own page gets the generic boss template.
 function ns.RegisterRaid(raid)
 	raid.pages, raid.pageByKey = {}, {}
 	AddPage(raid, T.General(), "general", "General")
 	AddPage(raid, T.Trash(), "trash", "Trash")
 	for _, boss in ipairs(raid.bosses) do
-		AddPage(raid, boss.page or T.Boss(boss), boss.encounterID, boss.name)
+		AddPage(raid, boss.page or T.Boss(boss), boss.key or boss.encounterID, boss.name)
 	end
 	ns.raids[#ns.raids + 1] = raid
 	ns.raidByID[raid.instanceID] = raid
