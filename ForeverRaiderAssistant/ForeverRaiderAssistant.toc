@@ -2,7 +2,7 @@
 ## Title: Forever Raider Assistant
 ## Notes: Plan raid assignments for every boss in World of Warcraft: Forever.
 ## Author: Drackus
-## Version: 0.4.0
+## Version: 0.5.0
 ## IconTexture: Interface\Icons\INV_Misc_Note_01
 ## SavedVariables: FRA_DB
 ## SavedVariablesPerCharacter: FRA_CharDB
@@ -13,6 +13,8 @@ Core\Roster.lua
 Core\Capabilities.lua
 Core\Catalog.lua
 Core\Plan.lua
+Core\Comm.lua
+Core\Notes.lua
 
 Tools\CombatLog.lua
 Tools\AutoInvite.lua
@@ -30,4 +32,6 @@ UI\Sidebar.lua
 UI\Home.lua
 UI\Raids.lua
 UI\Tools.lua
+UI\NoteWindow.lua
+UI\Notes.lua
 UI\Launchers.lua

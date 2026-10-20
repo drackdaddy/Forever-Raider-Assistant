@@ -3,8 +3,10 @@ Events: ADDON_LOADED.
 SavedVariables:
   FRA_DB (account): schema, roleTags[fullName] = "MT"|"OT"|"HEALER",
     plans[instanceID].pages[pageKey] = { values = {}, labels = {}, variant = key },
-    tools (same shape as the character's; created the first time a character switches to it)
-  FRA_CharDB (character): schema, ui = { screen, point, raid, page, phase }, minimapAngle,
+    tools (same shape as the character's; created the first time a character switches to it),
+    notes[key] (see Core/Notes.lua)
+  FRA_CharDB (character): schema, ui = { screen, point, raid, page, phase, note }, minimapAngle,
+    noteWindow = { point, width, height },
     tools = { autoLog, autoInvite, inviteWords = "comma, separated" }, toolsScope = "char"|"account"
 New fields come from the defaults on load, so older saved data needs no other upgrade. ]]
 
@@ -15,6 +17,7 @@ local SCHEMA = 1
 local DB_DEFAULTS = {
 	roleTags = {},
 	plans = {},
+	notes = {},
 }
 
 local CHAR_DEFAULTS = {
@@ -22,6 +25,7 @@ local CHAR_DEFAULTS = {
 	minimapAngle = 225,
 	tools = { autoLog = false, autoInvite = false, inviteWords = "inv, invite" },
 	toolsScope = "char",
+	noteWindow = { width = 320, height = 240 },
 }
 
 -- Copy every default that is missing from t, recursing into tables. Existing values are kept.

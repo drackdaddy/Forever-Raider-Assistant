@@ -1,5 +1,5 @@
---[[ Sidebar: Home and Tools, then every raid in the catalog. The open raid expands into its General,
-Trash and boss pages, and each page shows how many of its slots are filled. Clicking a page opens its
+--[[ Sidebar: Home, Tools and Quick Notes, then every raid in the catalog. The open raid expands
+into its General, Trash and boss pages, and each page shows how many of its slots are filled. Clicking a page opens its
 assignments on the Raids screen; clicking another raid opens its General page. Clicking the open
 raid's header folds or unfolds it (remembered for this session only).
 Events: none (redrawn through ns.MarkDirty("nav")). SavedVariables: reads FRA_CharDB.ui. ]]
@@ -62,6 +62,7 @@ local function Refresh(self)
 	local items = {
 		{ kind = "screen", key = "home", text = "Home" },
 		{ kind = "screen", key = "tools", text = "Tools" },
+		{ kind = "screen", key = "notes", text = "Quick Notes" },
 		{ kind = "label" },
 	}
 	for _, raid in ipairs(ns.raids) do

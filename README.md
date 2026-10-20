@@ -10,9 +10,11 @@ then type `/fra` in game.
 
 ## Status
 
-Version 0.4.0 covers phase 1 of [the feature spec](docs/SPEC.md). Raid and boss IDs are
+Version 0.5.0 covers phase 1 of [the feature spec](docs/SPEC.md). Raid and boss IDs are
 placeholders until they are read from the beta client. Raids without a data file can be planned on
 the Generic raid, which has 12 generic boss sheets.
 
 The Tools screen adds optional automatic combat logging for raid instances and whisper auto-invite
 with your own invite words.
+Quick Notes lets the group leader or an assistant push short notes that pop up for every raider
+running the addon.

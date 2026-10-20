@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0 - 2026-10-19
+- Quick Notes (new sidebar entry after Tools): write notes of up to 2,000 characters, saved account-wide. The group leader or a raid assistant can push a note to everyone running the addon; pushing again updates their copy.
+- Note window: received notes open as tabs in one movable, resizable window, each tab closable, with "Open in Quick Notes" to jump to the note in the planner.
+- Addon-message transport (protocol version 1, prefix "FRA"): chunked under 255 bytes, paced, retries when throttled, held during boss encounters, accepts only leader/assistant senders and warns once about other versions.
+
 ## 0.4.0 - 2026-10-19
 - Tools: choose whether this character uses its own settings or account-wide ones. Account settings start as a copy of the first character that switches to them.
 - Roster: raid leaders and assistants can drag players between groups (drop on an empty slot to move, on a player to swap). The game makes the move and the cards follow the game's groups. Not available in combat.

@@ -17,6 +17,7 @@ local function FullName(unit)
 	end
 	return realm and (name .. "-" .. realm)
 end
+Roster.FullName = FullName
 
 -- Add one unit to the roster. Returns false if its name is not available yet.
 local function Add(unit, group, rank)

@@ -8,13 +8,13 @@ local _, ns = ...
 ns.screenBuilders = {}
 
 local WIDTH, HEIGHT, TITLE_HEIGHT, SIDEBAR_WIDTH = 880, 580, 32, 210
-local SCREENS = { "home", "tools", "raids" }
+local SCREENS = { "home", "tools", "notes", "raids" }
 
 local main, body
 local screens = {}
 local minimized = false
 
--- Show screen key ("home", "tools" or "raids") in the content pane.
+-- Show screen key ("home", "tools", "notes" or "raids") in the content pane.
 function ns.ShowScreen(key)
 	ns.char.ui.screen = key
 	for k, screen in pairs(screens) do
@@ -113,12 +113,19 @@ local function Create()
 	ns.BuildSidebar(sidebar)
 end
 
-function ns.ToggleMain()
+-- Open the main window on the last screen used.
+function ns.ShowMain()
 	if not main then Create() end
-	if main:IsShown() then
-		main:Hide()
-	else
+	if not main:IsShown() then
 		main:Show()
 		ns.ShowScreen(screens[ns.char.ui.screen] and ns.char.ui.screen or "home")
+	end
+end
+
+function ns.ToggleMain()
+	if main and main:IsShown() then
+		main:Hide()
+	else
+		ns.ShowMain()
 	end
 end
