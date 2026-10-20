@@ -1,10 +1,10 @@
---[[ Sidebar: one entry per screen (Home, Tools, Quick Notes); the selected screen is highlighted.
+--[[ Sidebar: one entry per screen (Roster, Tools, Quick Notes); the selected screen is highlighted.
 Events: none (redrawn through ns.MarkDirty("nav")). SavedVariables: reads FRA_CharDB.ui.screen. ]]
 
 local _, ns = ...
 
 local ENTRIES = {
-	{ key = "home", text = "Home" },
+	{ key = "home", text = "Roster" },
 	{ key = "tools", text = "Tools" },
 	{ key = "notes", text = "Quick Notes" },
 }

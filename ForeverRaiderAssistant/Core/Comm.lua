@@ -107,11 +107,6 @@ ns.On("ENCOUNTER_END", function()
 	end)
 end)
 
-local function Trusted(sender)
-	local member = ns.Roster.byName[sender]
-	return member ~= nil and member.rank ~= nil and member.rank >= 1
-end
-
 local function PruneStale(now)
 	for key, entry in pairs(partial) do
 		if now - entry.seen > PARTIAL_TIMEOUT then partial[key] = nil end
@@ -119,7 +114,11 @@ local function PruneStale(now)
 end
 
 ns.On("CHAT_MSG_ADDON", function(_, prefix, text, _, sender)
-	if prefix ~= PREFIX or sender == ns.Roster.FullName("player") then return end
+	if prefix ~= PREFIX then return end
+	-- Senders are matched to the live roster and known by their full name from here on.
+	local member = ns.Roster.FromSender(sender)
+	if not member or member.name == ns.Roster.FullName("player") or (member.rank or 0) < 1 then return end
+	sender = member.name
 	local version, kind, id, seq, total, data = text:match("^(%d+)\t(%a)\t(%d+)\t(%d+)\t(%d+)\t(.*)$")
 	if not version then return end
 	if tonumber(version) ~= VERSION then
@@ -131,7 +130,7 @@ ns.On("CHAT_MSG_ADDON", function(_, prefix, text, _, sender)
 		return
 	end
 	seq, total = tonumber(seq), tonumber(total)
-	if not handlers[kind] or not Trusted(sender) or total > MAX_CHUNKS or seq < 1 or seq > total then return end
+	if not handlers[kind] or total > MAX_CHUNKS or seq < 1 or seq > total then return end
 
 	local now = GetTime()
 	PruneStale(now)

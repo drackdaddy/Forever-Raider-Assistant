@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0 - 2026-10-19
+- "Home" is now "Roster".
+- Roster shows full first-and-last names (wrapping to two lines when long).
+- Planned players: click an empty slot to add a name and class to that group. They show dimmed, count in class totals, can be tagged, dragged to another group or removed with a right-click, and merge away when that character joins (same full name, ignoring capitals). Saved account-wide.
+- Players are keyed by full name (GetUnitName(unit, true)); chat and addon-message senders ("First" or "First-Realm") are matched to the roster, so auto-invite and Quick Notes work with Forever's names. Role tags saved under "First-Realm" move to the full name automatically.
+- Fix: in a raid, your own pushed notes are no longer received back as notes from yourself.
+
 ## 0.7.1 - 2026-10-19
 - /fra notes and right-clicking the minimap button open or close the note window (on the newest note when it has no tabs). /fra still opens the main window.
 

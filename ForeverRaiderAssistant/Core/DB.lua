@@ -2,7 +2,8 @@
 place on ADDON_LOADED.
 Events: ADDON_LOADED.
 SavedVariables:
-  FRA_DB (account): schema, roleTags[fullName] = "MT"|"OT"|"HEALER",
+  FRA_DB (account): schema, roleTags[name] = "MT"|"OT"|"HEALER",
+    manualRoster = { { name, class, group }, ... } (see Core/Planned.lua),
     tools (same shape as the character's; created the first time a character switches to it),
     notes[key] (see Core/Notes.lua)
   FRA_CharDB (character): schema, ui = { screen, point, note }, minimapAngle,
@@ -17,6 +18,7 @@ local SCHEMA = 2
 local DB_DEFAULTS = {
 	roleTags = {},
 	notes = {},
+	manualRoster = {},
 }
 
 local CHAR_DEFAULTS = {

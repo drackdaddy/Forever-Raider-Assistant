@@ -90,7 +90,7 @@ ns.On("CHAT_MSG_WHISPER", function(_, text, sender)
 	if wordsText ~= tools.inviteWords then
 		words, wordsText = ns.ParseInviteWords(tools.inviteWords), tools.inviteWords
 	end
-	if not words[strlower(strtrim(text))] or ns.Roster.byName[sender] or pending[sender] then return end
+	if not words[strlower(strtrim(text))] or ns.Roster.FromSender(sender) or pending[sender] then return end
 	local action, reason = InviteAction()
 	if action == "invite" then
 		Invite(sender)
@@ -106,7 +106,7 @@ end)
 -- and convert if the party is about to overflow. Runs after the roster reader has refreshed.
 local function OnGroupChanged()
 	for name in pairs(pending) do
-		if ns.Roster.byName[name] then pending[name] = nil end
+		if ns.Roster.FromSender(name) then pending[name] = nil end
 	end
 	if IsInRaid() or not IsInGroup() then converting = false end
 	if not IsInGroup() then wipe(queued) end
@@ -114,7 +114,7 @@ local function OnGroupChanged()
 		local names = queued
 		queued = {}
 		for _, name in ipairs(names) do
-			if not ns.Roster.byName[name] then Invite(name) end
+			if not ns.Roster.FromSender(name) then Invite(name) end
 		end
 	end
 	ConvertIfNeeded()

@@ -2,8 +2,9 @@
 
 A free, MIT-licensed raid-night utility addon for World of Warcraft: Forever.
 
-- **Roster:** your group as 8 group cards with class counts and role tags. Raid leaders and
-  assistants drag players between groups.
+- **Roster:** your group as 8 group cards with full names, class counts and role tags. Add
+  planned players by name and class; they merge when they join. Raid leaders and assistants drag
+  players between groups.
 - **Tools:** start combat logging when you enter a raid instance, and auto-invite players who
   whisper one of your invite words (converting to a raid past 5). Settings per character or
   account-wide.
@@ -19,5 +20,5 @@ for the note window.
 
 ## Status
 
-Version 0.7.1. Raid planning (boss assignment sheets) was removed to focus on utilities;
+Version 0.8.0. Raid planning (boss assignment sheets) was removed to focus on utilities;
 [the original feature spec](docs/SPEC.md) describes it for reference.
