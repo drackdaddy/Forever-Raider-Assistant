@@ -1,8 +1,8 @@
 ## Interface: 16001
 ## Title: Forever Raider Assistant
-## Notes: Plan raid assignments for every boss in World of Warcraft: Forever.
+## Notes: Raid-night utilities for World of Warcraft: Forever: roster, auto invite, combat logging and quick notes.
 ## Author: Drackus
-## Version: 0.5.0
+## Version: 0.6.0
 ## IconTexture: Interface\Icons\INV_Misc_Note_01
 ## SavedVariables: FRA_DB
 ## SavedVariablesPerCharacter: FRA_CharDB
@@ -10,27 +10,16 @@
 Core\Init.lua
 Core\DB.lua
 Core\Roster.lua
-Core\Capabilities.lua
-Core\Catalog.lua
-Core\Plan.lua
 Core\Comm.lua
 Core\Notes.lua
 
 Tools\CombatLog.lua
 Tools\AutoInvite.lua
 
-Data\BarrowDeeps.lua
-Data\HyjalSummit.lua
-Data\OnyxiasLair.lua
-Data\Generic.lua
-
 UI\Widgets.lua
-UI\PlayerPicker.lua
-UI\Fields.lua
 UI\MainFrame.lua
 UI\Sidebar.lua
 UI\Home.lua
-UI\Raids.lua
 UI\Tools.lua
 UI\NoteWindow.lua
 UI\Notes.lua

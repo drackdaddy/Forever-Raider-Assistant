@@ -1,5 +1,5 @@
 --[[ Shared widgets and the flat look: color tokens, flat panels, push and toggle buttons, list rows,
-slot boxes, edit boxes, title-bar icon buttons, and a yes/no confirmation.
+edit boxes, checkboxes, title-bar icon buttons, and a yes/no confirmation.
 Events: none. SavedVariables: none. ]]
 
 local _, ns = ...
@@ -12,7 +12,6 @@ local C = {
 	titlebar = { 0.08, 0.085, 0.105, 1 },
 	sidebar = { 0.075, 0.08, 0.1, 1 },
 	card = { 0.1, 0.105, 0.13, 1 },
-	cardHead = { 0.13, 0.135, 0.165, 1 },
 	field = { 0.035, 0.04, 0.05, 1 },
 	border = { 1, 1, 1, 0.08 },
 	hover = { 1, 1, 1, 0.06 },
@@ -65,7 +64,7 @@ function ns.CreateButton(parent, text, width)
 end
 
 -- Add the list-row look to button: hover tint, a .text label, and an accent bar plus tint when
--- selected (see ns.SetSelected). Used for sidebar entries, roster slots and picker entries.
+-- selected (see ns.SetSelected). Used for sidebar entries, roster slots, note rows and note tabs.
 function ns.StyleListButton(button)
 	button.selected = ns.Fill(button, C.accentDim)
 	button.bar = button:CreateTexture(nil, "ARTWORK")
@@ -90,22 +89,6 @@ function ns.CreateListButton(parent, width, height)
 	local button = CreateFrame("Button", nil, parent)
 	button:SetSize(width, height)
 	ns.StyleListButton(button)
-	return button
-end
-
--- Dark box for a sheet slot, so empty slots still read as clickable. The border lights up on hover.
--- Takes left and right clicks.
-function ns.CreateValueButton(parent, width)
-	local button = CreateFrame("Button", nil, parent, "BackdropTemplate")
-	button:SetSize(width, 22)
-	ns.StylePanel(button, C.field)
-	button:SetScript("OnEnter", function(self) self:SetBackdropBorderColor(unpack(C.accent)) end)
-	button:SetScript("OnLeave", function(self) self:SetBackdropBorderColor(unpack(C.border)) end)
-	button.text = ns.Text(button)
-	button.text:SetPoint("LEFT", 8, 0)
-	button.text:SetPoint("RIGHT", -8, 0)
-	button.text:SetWordWrap(false)
-	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	return button
 end
 

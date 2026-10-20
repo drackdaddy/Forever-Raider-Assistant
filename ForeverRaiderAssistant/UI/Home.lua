@@ -1,6 +1,6 @@
 --[[ Home screen: the live roster as 8 group cards of 5, class counts, and the role-tag toolbar.
-Pick a tag (Main Tank, Off Tank, Healer), then click players to add or remove it. Tags feed the
-tank and healer filters. "Clear tags" removes every tag after a confirmation.
+Pick a tag (Main Tank, Off Tank, Healer), then click players to add or remove it; tags mark roles
+on the roster. "Clear tags" removes every tag after a confirmation.
 In a raid, the leader or an assistant can drag a player onto another group: onto an empty slot to
 move them, or onto a player to swap the two. The game makes the move; the cards then redraw from
 the game's roster, so they always show the real groups. Moves are refused in combat.
@@ -40,7 +40,6 @@ local function ToggleTag(slot)
 	local tags = ns.db.roleTags
 	tags[slot.name] = tags[slot.name] ~= activeTag and activeTag or nil
 	ns.MarkDirty("home")
-	ns.MarkDirty("raids")
 end
 
 -- Returns true if the player may move raiders now, or false plus the reason to print.
@@ -208,7 +207,6 @@ local function BuildToolbar()
 		ns.Confirm("Remove every Main Tank, Off Tank and Healer tag?", function()
 			wipe(ns.db.roleTags)
 			ns.MarkDirty("home")
-			ns.MarkDirty("raids")
 		end)
 	end)
 

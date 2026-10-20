@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0 - 2026-10-19
+- The addon is now a raid-night utility: raid planning is removed (raid catalog and data files for Barrow Deeps, Hyjal Summit, Onyxia's Lair and the Generic raid, boss sheets, the Raids screen, player picker and capability filters).
+- Saved data schema 2: existing raid plans are deleted once on load, and the old Raids screen selection is cleared. Role tags, tools settings and notes are kept.
+- Role tags stay on the roster as role markers.
+
 ## 0.5.0 - 2026-10-19
 - Quick Notes (new sidebar entry after Tools): write notes of up to 2,000 characters, saved account-wide. The group leader or a raid assistant can push a note to everyone running the addon; pushing again updates their copy.
 - Note window: received notes open as tabs in one movable, resizable window, each tab closable, with "Open in Quick Notes" to jump to the note in the planner.

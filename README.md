@@ -1,7 +1,14 @@
 # Forever Raider Assistant
 
-A free, MIT-licensed raid-planning addon for World of Warcraft: Forever. Raid leaders plan tanks,
-healers, raid markers, interrupts, dispels and other jobs on a sheet for each boss.
+A free, MIT-licensed raid-night utility addon for World of Warcraft: Forever.
+
+- **Roster:** your group as 8 group cards with class counts and role tags. Raid leaders and
+  assistants drag players between groups.
+- **Tools:** start combat logging when you enter a raid instance, and auto-invite players who
+  whisper one of your invite words (converting to a raid past 5). Settings per character or
+  account-wide.
+- **Quick Notes:** the group leader or an assistant pushes short notes that pop up, in a tabbed
+  window, for every raider running the addon.
 
 ## Install
 
@@ -10,11 +17,5 @@ then type `/fra` in game.
 
 ## Status
 
-Version 0.5.0 covers phase 1 of [the feature spec](docs/SPEC.md). Raid and boss IDs are
-placeholders until they are read from the beta client. Raids without a data file can be planned on
-the Generic raid, which has 12 generic boss sheets.
-
-The Tools screen adds optional automatic combat logging for raid instances and whisper auto-invite
-with your own invite words.
-Quick Notes lets the group leader or an assistant push short notes that pop up for every raider
-running the addon.
+Version 0.6.0. Raid planning (boss assignment sheets) was removed to focus on utilities;
+[the original feature spec](docs/SPEC.md) describes it for reference.

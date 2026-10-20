@@ -1,22 +1,21 @@
---[[ Saved data: defaults for both SavedVariables, applied in one place on ADDON_LOADED.
+--[[ Saved data: migrations from older versions, then defaults for both SavedVariables, applied in one
+place on ADDON_LOADED.
 Events: ADDON_LOADED.
 SavedVariables:
   FRA_DB (account): schema, roleTags[fullName] = "MT"|"OT"|"HEALER",
-    plans[instanceID].pages[pageKey] = { values = {}, labels = {}, variant = key },
     tools (same shape as the character's; created the first time a character switches to it),
     notes[key] (see Core/Notes.lua)
-  FRA_CharDB (character): schema, ui = { screen, point, raid, page, phase, note }, minimapAngle,
+  FRA_CharDB (character): schema, ui = { screen, point, note }, minimapAngle,
     noteWindow = { point, width, height },
     tools = { autoLog, autoInvite, inviteWords = "comma, separated" }, toolsScope = "char"|"account"
-New fields come from the defaults on load, so older saved data needs no other upgrade. ]]
+New fields come from the defaults on load; removed fields are deleted by a migration step. ]]
 
 local addonName, ns = ...
 
-local SCHEMA = 1
+local SCHEMA = 2
 
 local DB_DEFAULTS = {
 	roleTags = {},
-	plans = {},
 	notes = {},
 }
 
@@ -40,12 +39,33 @@ local function Fill(t, defaults)
 	return t
 end
 
+-- Upgrade account data saved by older versions. Data without a schema is new, so already current.
+local function MigrateAccount(db)
+	if (db.schema or SCHEMA) < 2 then
+		-- 0.6.0 removed raid planning; the saved raid plans are deleted, as chosen by the author.
+		db.plans = nil
+	end
+	db.schema = SCHEMA
+end
+
+-- Upgrade character data saved by older versions.
+local function MigrateChar(char)
+	if (char.schema or SCHEMA) < 2 and char.ui then
+		-- 0.6.0 removed the Raids screen and its selected raid, page and phase.
+		char.ui.raid, char.ui.page, char.ui.phase = nil, nil, nil
+		if char.ui.screen == "raids" then char.ui.screen = "home" end
+	end
+	char.schema = SCHEMA
+end
+
 ns.On("ADDON_LOADED", function(_, name)
 	if name ~= addonName then return end
-	FRA_DB = Fill(FRA_DB or {}, DB_DEFAULTS)
-	FRA_DB.schema = FRA_DB.schema or SCHEMA
-	FRA_CharDB = Fill(FRA_CharDB or {}, CHAR_DEFAULTS)
-	FRA_CharDB.schema = FRA_CharDB.schema or SCHEMA
+	FRA_DB = FRA_DB or {}
+	MigrateAccount(FRA_DB)
+	Fill(FRA_DB, DB_DEFAULTS)
+	FRA_CharDB = FRA_CharDB or {}
+	MigrateChar(FRA_CharDB)
+	Fill(FRA_CharDB, CHAR_DEFAULTS)
 	ns.db, ns.char = FRA_DB, FRA_CharDB
 end)
 

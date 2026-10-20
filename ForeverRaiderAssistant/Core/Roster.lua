@@ -54,7 +54,6 @@ local function Refresh()
 		ns.Debounce("roster", 1, Refresh)
 	end
 	ns.MarkDirty("home")
-	ns.MarkDirty("raids")
 end
 
 local function Queue()

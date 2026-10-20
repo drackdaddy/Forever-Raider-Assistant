@@ -1,6 +1,6 @@
 --[[ Note window: shows pushed notes, one tab per note, newest tab selected. It can be moved by its
 title bar and resized from the corner grip, and it remembers both. Each tab has its own close
-button; closing the window closes every tab. "Open in Quick Notes" shows the note in the planner.
+button; closing the window closes every tab. "Open in Quick Notes" shows the note in the main window.
 Events: none (redrawn through ns.MarkDirty("noteWindow")). SavedVariables: FRA_CharDB.noteWindow. ]]
 
 local _, ns = ...

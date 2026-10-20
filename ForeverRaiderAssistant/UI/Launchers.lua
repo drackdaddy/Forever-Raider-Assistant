@@ -1,4 +1,4 @@
---[[ Launchers: minimap button (left-click opens the planner, drag to move it around the minimap),
+--[[ Launchers: minimap button (left-click opens the main window, drag to move it around the minimap),
 an Addon Compartment entry, and the /fra slash command.
 Events: PLAYER_LOGIN. SavedVariables: FRA_CharDB.minimapAngle. ]]
 
@@ -24,7 +24,7 @@ end
 local function ShowTooltip(button)
 	GameTooltip:SetOwner(button, "ANCHOR_LEFT")
 	GameTooltip:SetText(ns.TITLE)
-	GameTooltip:AddLine("Left-click: open or close the planner", 1, 1, 1)
+	GameTooltip:AddLine("Left-click: open or close the main window", 1, 1, 1)
 	GameTooltip:AddLine("Drag: move this button", 1, 1, 1)
 	GameTooltip:Show()
 end
@@ -81,6 +81,6 @@ SlashCmdList.FRA = function(msg)
 	if strtrim(msg) == "" then
 		ns.ToggleMain()
 	else
-		ns.Print("/fra opens or closes the planner.")
+		ns.Print("/fra opens or closes the main window.")
 	end
 end

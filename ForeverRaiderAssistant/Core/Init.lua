@@ -86,8 +86,3 @@ function ns.ColorName(fullName, classFile, dim)
 	end
 	return color:WrapTextInColorCode(short)
 end
-
--- Inline texture string for raid marker index (1 = star ... 8 = skull).
-function ns.MarkerIcon(index, size)
-	return "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_" .. index .. ":" .. (size or 0) .. "|t"
-end

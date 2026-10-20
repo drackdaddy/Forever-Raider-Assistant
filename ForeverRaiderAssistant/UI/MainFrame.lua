@@ -8,13 +8,13 @@ local _, ns = ...
 ns.screenBuilders = {}
 
 local WIDTH, HEIGHT, TITLE_HEIGHT, SIDEBAR_WIDTH = 880, 580, 32, 210
-local SCREENS = { "home", "tools", "notes", "raids" }
+local SCREENS = { "home", "tools", "notes" }
 
 local main, body
 local screens = {}
 local minimized = false
 
--- Show screen key ("home", "tools", "notes" or "raids") in the content pane.
+-- Show screen key ("home", "tools" or "notes") in the content pane.
 function ns.ShowScreen(key)
 	ns.char.ui.screen = key
 	for k, screen in pairs(screens) do
@@ -34,7 +34,6 @@ end
 
 local function ToggleMinimized()
 	minimized = not minimized
-	ns.ClosePicker()
 	body:SetShown(not minimized)
 	main:SetHeight(minimized and TITLE_HEIGHT + 2 or HEIGHT)
 end
@@ -78,7 +77,6 @@ local function Create()
 	main:SetMovable(true)
 	main:EnableMouse(true)
 	main:SetDontSavePosition(true)
-	main:HookScript("OnHide", ns.ClosePicker)
 	local point = ns.char.ui.point
 	if point then
 		main:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", point[1], point[2])
