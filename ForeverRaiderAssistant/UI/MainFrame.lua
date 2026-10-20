@@ -8,13 +8,13 @@ local _, ns = ...
 ns.screenBuilders = {}
 
 local WIDTH, HEIGHT, TITLE_HEIGHT, SIDEBAR_WIDTH = 880, 580, 32, 210
-local SCREENS = { "home", "raids" }
+local SCREENS = { "home", "tools", "raids" }
 
 local main, body
 local screens = {}
 local minimized = false
 
--- Show screen key ("home" or "raids") in the content pane.
+-- Show screen key ("home", "tools" or "raids") in the content pane.
 function ns.ShowScreen(key)
 	ns.char.ui.screen = key
 	for k, screen in pairs(screens) do

@@ -3,7 +3,9 @@ Events: ADDON_LOADED.
 SavedVariables:
   FRA_DB (account): schema, roleTags[fullName] = "MT"|"OT"|"HEALER",
     plans[instanceID].pages[pageKey] = { values = {}, labels = {}, variant = key }
-  FRA_CharDB (character): schema, ui = { screen, point, raid, page, phase }, minimapAngle ]]
+  FRA_CharDB (character): schema, ui = { screen, point, raid, page, phase }, minimapAngle,
+    tools = { autoLog, autoInvite, inviteWords = "comma, separated" }
+New fields come from the defaults on load, so older saved data needs no other upgrade. ]]
 
 local addonName, ns = ...
 
@@ -17,6 +19,7 @@ local DB_DEFAULTS = {
 local CHAR_DEFAULTS = {
 	ui = { screen = "home" },
 	minimapAngle = 225,
+	tools = { autoLog = false, autoInvite = false, inviteWords = "inv, invite" },
 }
 
 -- Copy every default that is missing from t, recursing into tables. Existing values are kept.

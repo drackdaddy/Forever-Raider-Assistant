@@ -123,6 +123,31 @@ function ns.CreateEditBox(parent, width)
 	return edit
 end
 
+-- Flat checkbox with a label; clicking the label toggles it too. onToggle(on) runs on each click.
+-- Call box:SetValue(on) to show a saved value.
+function ns.CreateCheckbox(parent, label, onToggle)
+	local box = CreateFrame("Button", nil, parent, "BackdropTemplate")
+	box:SetSize(18, 18)
+	ns.StylePanel(box, C.field)
+	box.mark = box:CreateTexture(nil, "ARTWORK")
+	box.mark:SetPoint("TOPLEFT", 4, -4)
+	box.mark:SetPoint("BOTTOMRIGHT", -4, 4)
+	box.mark:SetColorTexture(unpack(C.accent))
+	box.text = ns.Text(box, "GameFontHighlight")
+	box.text:SetPoint("LEFT", box, "RIGHT", 10, 0)
+	box.text:SetText(label)
+	box:SetHitRectInsets(0, -(box.text:GetStringWidth() + 10), 0, 0)
+	box.SetValue = function(self, on) self.mark:SetShown(on) end
+	box:SetScript("OnEnter", function(self) self:SetBackdropBorderColor(unpack(C.accent)) end)
+	box:SetScript("OnLeave", function(self) self:SetBackdropBorderColor(unpack(C.border)) end)
+	box:SetScript("OnClick", function(self)
+		local on = not self.mark:IsShown()
+		self:SetValue(on)
+		onToggle(on)
+	end)
+	return box
+end
+
 -- Title-bar button drawn from thin lines: kind "close" (an X) or "minimize" (a dash).
 function ns.CreateIconButton(parent, kind)
 	local button = CreateFrame("Button", nil, parent)

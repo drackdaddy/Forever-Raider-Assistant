@@ -1,5 +1,5 @@
---[[ Sidebar: Home, then every raid in the catalog. The open raid expands into its General, Trash and
-boss pages, and each page shows how many of its slots are filled. Clicking a page opens its
+--[[ Sidebar: Home and Tools, then every raid in the catalog. The open raid expands into its General,
+Trash and boss pages, and each page shows how many of its slots are filled. Clicking a page opens its
 assignments on the Raids screen; clicking another raid opens its General page. Clicking the open
 raid's header folds or unfolds it (remembered for this session only).
 Events: none (redrawn through ns.MarkDirty("nav")). SavedVariables: reads FRA_CharDB.ui. ]]
@@ -11,8 +11,8 @@ local folded = false
 
 local function OnClick(button)
 	local item, ui = button.item, ns.char.ui
-	if item.kind == "home" then
-		ns.ShowScreen("home")
+	if item.kind == "screen" then
+		ns.ShowScreen(item.key)
 	elseif item.kind == "raid" and ui.screen == "raids" and ui.raid == item.raid.instanceID then
 		folded = not folded
 		ns.MarkDirty("nav")
@@ -34,8 +34,8 @@ local function InitRow(button, item)
 	local ui = ns.char.ui
 	local text
 	local badge, color, selected = "", C.text, false
-	if item.kind == "home" then
-		text, selected = "Home", ui.screen == "home"
+	if item.kind == "screen" then
+		text, selected = item.text, ui.screen == item.key
 	elseif item.kind == "label" then
 		text, color = "RAIDS", C.dim
 	elseif item.kind == "raid" then
@@ -59,7 +59,11 @@ end
 local function Refresh(self)
 	local ui = ns.char.ui
 	local open = ns.raidByID[ui.raid] or ns.raids[1]
-	local items = { { kind = "home" }, { kind = "label" } }
+	local items = {
+		{ kind = "screen", key = "home", text = "Home" },
+		{ kind = "screen", key = "tools", text = "Tools" },
+		{ kind = "label" },
+	}
 	for _, raid in ipairs(ns.raids) do
 		local expanded = raid == open and not folded
 		items[#items + 1] = { kind = "raid", raid = raid, open = expanded }

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 - 2026-10-19
+- Tools screen (new sidebar entry) with per-character options.
+- Combat logging: optionally starts the combat log when you enter a raid instance and asks whether to stop it when you leave.
+- Auto invite: optionally invites players who whisper one of your invite words (comma-separated, default "inv, invite"). Works when solo, party leader, or raid leader or assistant; pauses during boss encounters.
+
 ## 0.2.0 - 2026-10-19
 - Modern flat window: title bar with minimize and close, flat buttons, slot boxes and edit boxes, and sheet sections drawn as cards.
 - Sidebar navigation: Home, then each raid, which expands into its General, Trash and boss pages with a count of filled slots; the page's assignments fill the rest of the window. The raid dropdown and page list are gone.
