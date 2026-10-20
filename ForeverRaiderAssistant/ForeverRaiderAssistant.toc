@@ -2,7 +2,7 @@
 ## Title: Forever Raider Assistant
 ## Notes: Raid-night utilities for World of Warcraft: Forever: roster, auto invite, combat logging and quick notes.
 ## Author: Drackus
-## Version: 0.8.0
+## Version: 0.9.0
 ## IconTexture: Interface\Icons\INV_Misc_Note_01
 ## SavedVariables: FRA_DB
 ## SavedVariablesPerCharacter: FRA_CharDB
@@ -17,6 +17,8 @@ Core\Notes.lua
 
 Tools\CombatLog.lua
 Tools\AutoInvite.lua
+Tools\AutoPromote.lua
+Tools\LootMaster.lua
 
 UI\Widgets.lua
 UI\MainFrame.lua

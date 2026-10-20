@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0 - 2026-10-19
+- Tools: auto promote to raid assistant, by ticked guild ranks and/or a list of full names. Runs while you lead a raid, waits until combat ends, and promotes each player once per session so manual demotions stick.
+- Tools: auto loot master. Sets Master Loot to the named player once per raid when they're in it and you lead it; waits until combat ends.
+- The Tools screen now scrolls. Account-wide tools settings get new options' defaults on load.
+
 ## 0.8.0 - 2026-10-19
 - "Home" is now "Roster".
 - Roster shows full first-and-last names (wrapping to two lines when long).

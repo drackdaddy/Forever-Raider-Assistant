@@ -8,7 +8,9 @@ SavedVariables:
     notes[key] (see Core/Notes.lua)
   FRA_CharDB (character): schema, ui = { screen, point, note }, minimapAngle,
     noteWindow = { point, width, height },
-    tools = { autoLog, autoInvite, inviteWords = "comma, separated" }, toolsScope = "char"|"account"
+    tools = { autoLog, autoInvite, inviteWords = "comma, separated", promoteByRank,
+      promoteRanks[guild rank index] = true, promoteByName, promoteNames = "comma, separated",
+      lootMaster, lootMasterName }, toolsScope = "char"|"account"
 New fields come from the defaults on load; removed fields are deleted by a migration step. ]]
 
 local addonName, ns = ...
@@ -24,7 +26,11 @@ local DB_DEFAULTS = {
 local CHAR_DEFAULTS = {
 	ui = { screen = "home" },
 	minimapAngle = 225,
-	tools = { autoLog = false, autoInvite = false, inviteWords = "inv, invite" },
+	tools = {
+		autoLog = false, autoInvite = false, inviteWords = "inv, invite",
+		promoteByRank = false, promoteRanks = {}, promoteByName = false, promoteNames = "",
+		lootMaster = false, lootMasterName = "",
+	},
 	toolsScope = "char",
 	noteWindow = { width = 320, height = 240 },
 }
@@ -68,6 +74,8 @@ ns.On("ADDON_LOADED", function(_, name)
 	FRA_CharDB = FRA_CharDB or {}
 	MigrateChar(FRA_CharDB)
 	Fill(FRA_CharDB, CHAR_DEFAULTS)
+	-- Account-wide tools settings start as a copy of one character's, so give them new options too.
+	if FRA_DB.tools then Fill(FRA_DB.tools, CHAR_DEFAULTS.tools) end
 	ns.db, ns.char = FRA_DB, FRA_CharDB
 end)
 
