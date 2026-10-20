@@ -1,5 +1,6 @@
---[[ Launchers: minimap button (left-click opens the main window, drag to move it around the minimap),
-an Addon Compartment entry, and the /fra slash command.
+--[[ Launchers: minimap button (left-click opens the main window, right-click the note window, drag
+to move it around the minimap), an Addon Compartment entry, and the /fra slash command
+(/fra: main window, /fra notes: note window).
 Events: PLAYER_LOGIN. SavedVariables: FRA_CharDB.minimapAngle. ]]
 
 local _, ns = ...
@@ -25,6 +26,7 @@ local function ShowTooltip(button)
 	GameTooltip:SetOwner(button, "ANCHOR_LEFT")
 	GameTooltip:SetText(ns.TITLE)
 	GameTooltip:AddLine("Left-click: open or close the main window", 1, 1, 1)
+	GameTooltip:AddLine("Right-click: open or close the note window", 1, 1, 1)
 	GameTooltip:AddLine("Drag: move this button", 1, 1, 1)
 	GameTooltip:Show()
 end
@@ -34,7 +36,7 @@ local function CreateMinimapButton()
 	button:SetSize(31, 31)
 	button:SetFrameStrata("MEDIUM")
 	button:SetFrameLevel(8)
-	button:RegisterForClicks("LeftButtonUp")
+	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	button:RegisterForDrag("LeftButton")
 	button:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 
@@ -51,7 +53,13 @@ local function CreateMinimapButton()
 	border:SetPoint("TOPLEFT")
 	border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
 
-	button:SetScript("OnClick", ns.ToggleMain)
+	button:SetScript("OnClick", function(_, mouseButton)
+		if mouseButton == "RightButton" then
+			ns.ToggleNoteWindow()
+		else
+			ns.ToggleMain()
+		end
+	end)
 	button:SetScript("OnEnter", ShowTooltip)
 	button:SetScript("OnLeave", GameTooltip_Hide)
 	button:SetScript("OnDragStart", function(self)
@@ -78,9 +86,12 @@ end)
 
 SLASH_FRA1 = "/fra"
 SlashCmdList.FRA = function(msg)
-	if strtrim(msg) == "" then
+	msg = strlower(strtrim(msg))
+	if msg == "" then
 		ns.ToggleMain()
+	elseif msg == "notes" or msg == "note" then
+		ns.ToggleNoteWindow()
 	else
-		ns.Print("/fra opens or closes the main window.")
+		ns.Print("/fra opens or closes the main window; /fra notes opens or closes the note window.")
 	end
 end

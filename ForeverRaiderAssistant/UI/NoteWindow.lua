@@ -154,6 +154,20 @@ local function Build()
 	ns.RegisterView("noteWindow", window)
 end
 
+-- Close the note window if it is open; otherwise open it on the newest note (received or your own).
+function ns.ToggleNoteWindow()
+	if window and window:IsShown() then
+		Close()
+		return
+	end
+	local newest = ns.Notes.List()[1]
+	if newest then
+		ns.ShowNoteTab(newest.key)
+	else
+		ns.Print("No notes yet.")
+	end
+end
+
 -- Open key in the note window: add its tab if it has none, select it, and show the window.
 function ns.ShowNoteTab(key)
 	if not window then Build() end

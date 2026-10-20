@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.1 - 2026-10-19
+- /fra notes and right-clicking the minimap button open or close the note window (on the newest note when it has no tabs). /fra still opens the main window.
+
 ## 0.7.0 - 2026-10-19
 - Quick Notes: target markers ({rt1}-{rt8} or {star}, {circle}, {diamond}, {triangle}, {moon}, {square}, {cross}/{x}, {skull}) and ground markers ({wm1}-{wm8}) in note titles and text, drawn as icons in the note window, note list and chat line. The editor has a marker bar that inserts them at the cursor.
 - Other "|" escape codes in notes now show as typed, so pushed notes can't draw anything but markers.

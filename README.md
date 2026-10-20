@@ -14,9 +14,10 @@ A free, MIT-licensed raid-night utility addon for World of Warcraft: Forever.
 ## Install
 
 Copy the `ForeverRaiderAssistant` folder into your Forever client's `Interface/AddOns` folder,
-then type `/fra` in game.
+then type `/fra` in game for the main window, or `/fra notes` (or right-click the minimap button)
+for the note window.
 
 ## Status
 
-Version 0.7.0. Raid planning (boss assignment sheets) was removed to focus on utilities;
+Version 0.7.1. Raid planning (boss assignment sheets) was removed to focus on utilities;
 [the original feature spec](docs/SPEC.md) describes it for reference.
