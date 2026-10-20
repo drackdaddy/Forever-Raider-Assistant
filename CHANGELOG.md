@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 - 2026-10-19
+- Tools: choose whether this character uses its own settings or account-wide ones. Account settings start as a copy of the first character that switches to them.
+- Roster: raid leaders and assistants can drag players between groups (drop on an empty slot to move, on a player to swap). The game makes the move and the cards follow the game's groups. Not available in combat.
+
 ## 0.3.1 - 2026-10-19
 - Auto invite converts the party to a raid when members plus invites waiting for an answer would pass 5; whispers that arrive while the party is full are invited once the raid forms.
 

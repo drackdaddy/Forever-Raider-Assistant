@@ -2,7 +2,7 @@
 ## Title: Forever Raider Assistant
 ## Notes: Plan raid assignments for every boss in World of Warcraft: Forever.
 ## Author: Drackus
-## Version: 0.3.1
+## Version: 0.4.0
 ## IconTexture: Interface\Icons\INV_Misc_Note_01
 ## SavedVariables: FRA_DB
 ## SavedVariablesPerCharacter: FRA_CharDB

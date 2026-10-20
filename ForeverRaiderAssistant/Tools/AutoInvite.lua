@@ -5,7 +5,8 @@ encounters, when the game hides whisper text from addons, and it sends no chat.
 When party members plus invites still waiting for an answer would pass 5, the party leader's party
 is converted to a raid. If the party is already full, the invite waits until the conversion lands.
 Events: CHAT_MSG_WHISPER, GROUP_ROSTER_UPDATE (debounced).
-SavedVariables: FRA_CharDB.tools.autoInvite, .inviteWords. ]]
+SavedVariables: autoInvite and inviteWords in the active tools settings (see ns.Tools in
+Core/DB.lua). ]]
 
 local _, ns = ...
 
@@ -13,7 +14,7 @@ local PARTY_SIZE = MAX_PARTY_MEMBERS + 1
 -- Invites nobody answers stop counting toward the party size after this many seconds.
 local INVITE_TIMEOUT = 120
 
-local words -- set of lower-case invite words, rebuilt after the list changes
+local words, wordsText -- set of lower-case invite words, and the list text it was built from
 local pending = {} -- [fullName] = time sent, for invites not yet answered
 local queued = {} -- names to invite once the party has become a raid
 local converting = false
@@ -32,8 +33,7 @@ end
 
 -- Save the comma-separated word list.
 function ns.SetInviteWords(text)
-	ns.char.tools.inviteWords = text
-	words = nil
+	ns.Tools().inviteWords = text
 end
 
 local function PendingCount()
@@ -84,9 +84,12 @@ local function InviteAction()
 end
 
 ns.On("CHAT_MSG_WHISPER", function(_, text, sender)
-	local tools = ns.char.tools
+	local tools = ns.Tools()
 	if not tools.autoInvite or IsEncounterInProgress() then return end
-	words = words or ns.ParseInviteWords(tools.inviteWords)
+	-- Rebuild the set whenever the list text differs, which also covers a switch of settings scope.
+	if wordsText ~= tools.inviteWords then
+		words, wordsText = ns.ParseInviteWords(tools.inviteWords), tools.inviteWords
+	end
 	if not words[strlower(strtrim(text))] or ns.Roster.byName[sender] or pending[sender] then return end
 	local action, reason = InviteAction()
 	if action == "invite" then

@@ -2,9 +2,10 @@
 Events: ADDON_LOADED.
 SavedVariables:
   FRA_DB (account): schema, roleTags[fullName] = "MT"|"OT"|"HEALER",
-    plans[instanceID].pages[pageKey] = { values = {}, labels = {}, variant = key }
+    plans[instanceID].pages[pageKey] = { values = {}, labels = {}, variant = key },
+    tools (same shape as the character's; created the first time a character switches to it)
   FRA_CharDB (character): schema, ui = { screen, point, raid, page, phase }, minimapAngle,
-    tools = { autoLog, autoInvite, inviteWords = "comma, separated" }
+    tools = { autoLog, autoInvite, inviteWords = "comma, separated" }, toolsScope = "char"|"account"
 New fields come from the defaults on load, so older saved data needs no other upgrade. ]]
 
 local addonName, ns = ...
@@ -20,6 +21,7 @@ local CHAR_DEFAULTS = {
 	ui = { screen = "home" },
 	minimapAngle = 225,
 	tools = { autoLog = false, autoInvite = false, inviteWords = "inv, invite" },
+	toolsScope = "char",
 }
 
 -- Copy every default that is missing from t, recursing into tables. Existing values are kept.
@@ -42,3 +44,17 @@ ns.On("ADDON_LOADED", function(_, name)
 	FRA_CharDB.schema = FRA_CharDB.schema or SCHEMA
 	ns.db, ns.char = FRA_DB, FRA_CharDB
 end)
+
+-- The tools settings this character uses: its own, or the account-wide ones.
+function ns.Tools()
+	return ns.char.toolsScope == "account" and ns.db.tools or ns.char.tools
+end
+
+-- Switch this character between "char" and "account" tools settings. The account settings start
+-- as a copy of this character's the first time any character switches to them.
+function ns.SetToolsScope(scope)
+	if scope == "account" and not ns.db.tools then
+		ns.db.tools = CopyTable(ns.char.tools)
+	end
+	ns.char.toolsScope = scope
+end

@@ -1,6 +1,7 @@
 --[[ Combat logging: when the option is on, entering a raid instance turns on the game's combat log,
 and leaving one asks whether to stop it. The addon only switches logging; it never reads the log.
-Events: PLAYER_ENTERING_WORLD, ZONE_CHANGED_NEW_AREA. SavedVariables: FRA_CharDB.tools.autoLog. ]]
+Events: PLAYER_ENTERING_WORLD, ZONE_CHANGED_NEW_AREA.
+SavedVariables: autoLog in the active tools settings (see ns.Tools in Core/DB.lua). ]]
 
 local _, ns = ...
 
@@ -25,7 +26,7 @@ local function Check()
 	local nowInRaid = instanceType == "raid"
 	if nowInRaid == inRaid then return end
 	inRaid = nowInRaid
-	if not ns.char.tools.autoLog then return end
+	if not ns.Tools().autoLog then return end
 	if nowInRaid and not LoggingCombat() then
 		LoggingCombat(true)
 		ns.Print("Combat logging started.")
@@ -36,7 +37,7 @@ end
 
 -- Turn the option on or off. Turning it on inside a raid starts logging right away.
 function ns.SetAutoLog(on)
-	ns.char.tools.autoLog = on
+	ns.Tools().autoLog = on
 	if on then
 		inRaid = false
 		Check()

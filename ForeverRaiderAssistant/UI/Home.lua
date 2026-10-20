@@ -1,6 +1,9 @@
 --[[ Home screen: the live roster as 8 group cards of 5, class counts, and the role-tag toolbar.
 Pick a tag (Main Tank, Off Tank, Healer), then click players to add or remove it. Tags feed the
 tank and healer filters. "Clear tags" removes every tag after a confirmation.
+In a raid, the leader or an assistant can drag a player onto another group: onto an empty slot to
+move them, or onto a player to swap the two. The game makes the move; the cards then redraw from
+the game's roster, so they always show the real groups. Moves are refused in combat.
 Events: none (redrawn through ns.MarkDirty("home")). SavedVariables: FRA_DB.roleTags. ]]
 
 local _, ns = ...
@@ -25,13 +28,85 @@ local RANK_ICONS = {
 
 local view
 local activeTag
+local dragFrom -- slot being dragged
+local ghost -- label that follows the cursor while dragging
 
 local function ToggleTag(slot)
+	if slot.dragged then
+		slot.dragged = nil
+		return
+	end
 	if not activeTag or not slot.name then return end
 	local tags = ns.db.roleTags
 	tags[slot.name] = tags[slot.name] ~= activeTag and activeTag or nil
 	ns.MarkDirty("home")
 	ns.MarkDirty("raids")
+end
+
+-- Returns true if the player may move raiders now, or false plus the reason to print.
+local function CanMove()
+	if not IsInRaid() then return false, "Moving players between groups needs a raid." end
+	if not (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) then
+		return false, "Only the raid leader or an assistant can move players."
+	end
+	if InCombatLockdown() then return false, "Players can't be moved in combat." end
+	return true
+end
+
+-- Raid roster index of a member ("raid7" -> 7).
+local function RaidIndex(member)
+	return tonumber(member.unit:match("^raid(%d+)$"))
+end
+
+local function FollowCursor(self)
+	local x, y = GetCursorPosition()
+	local scale = self:GetEffectiveScale()
+	self:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x / scale + 12, y / scale - 8)
+end
+
+local function StartDrag(slot)
+	if not slot.member then return end
+	slot.dragged = true
+	local ok, reason = CanMove()
+	if not ok then
+		ns.Print(reason)
+		return
+	end
+	if not ghost then
+		ghost = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+		ns.StylePanel(ghost, C.card)
+		ghost:SetBackdropBorderColor(unpack(C.accent))
+		ghost:SetFrameStrata("TOOLTIP")
+		ghost:SetSize(CARD_WIDTH - 12, 20)
+		ghost.text = ns.Text(ghost)
+		ghost.text:SetPoint("LEFT", 8, 0)
+		-- Runs every frame only while a drag is in progress, so the label tracks the cursor.
+		ghost:SetScript("OnUpdate", FollowCursor)
+	end
+	dragFrom = slot
+	ghost.text:SetText(slot.text:GetText())
+	FollowCursor(ghost)
+	ghost:Show()
+end
+
+-- Drop on whichever slot is under the cursor: an empty slot moves the player into that group,
+-- another player's slot swaps the two. One drop makes at most one call to the game.
+local function StopDrag(slot)
+	C_Timer.After(0, function() slot.dragged = nil end)
+	if not dragFrom then return end
+	local from = dragFrom.member
+	dragFrom = nil
+	ghost:Hide()
+	local target
+	for _, candidate in ipairs(view.slots) do
+		if candidate:IsMouseOver() then target = candidate end
+	end
+	if not target or target.groupIndex == from.group or not CanMove() then return end
+	if target.member then
+		SwapRaidSubgroup(RaidIndex(from), RaidIndex(target.member))
+	else
+		SetRaidSubgroup(RaidIndex(from), target.groupIndex)
+	end
 end
 
 local function NewSlot(parent)
@@ -45,10 +120,14 @@ local function NewSlot(parent)
 	slot.tag = ns.Text(slot)
 	slot.tag:SetPoint("RIGHT", -5, 0)
 	slot:SetScript("OnClick", ToggleTag)
+	slot:RegisterForDrag("LeftButton")
+	slot:SetScript("OnDragStart", StartDrag)
+	slot:SetScript("OnDragStop", StopDrag)
 	return slot
 end
 
 local function FillSlot(slot, member)
+	slot.member = member
 	slot.name = member and member.name
 	slot.text:SetText(member and ns.ColorName(member.name, member.class, not member.online) or "")
 	slot.tag:SetText(member and BADGE[ns.db.roleTags[member.name]] or "")
@@ -135,7 +214,8 @@ local function BuildToolbar()
 
 	local hint = ns.Text(view, "GameFontHighlightSmall", C.dim)
 	hint:SetPoint("TOPLEFT", 0, -90)
-	hint:SetText("Pick a tag, then click players to add or remove it. Click the tag again to stop tagging.")
+	hint:SetText("Pick a tag, then click players to tag them; click the tag again to stop. "
+		.. "Drag a player to another group to move them.")
 end
 
 local function BuildGroups()
@@ -151,6 +231,7 @@ local function BuildGroups()
 		title:SetText(GROUP .. " " .. g)
 		for s = 1, SLOTS do
 			local slot = NewSlot(card)
+			slot.groupIndex = g
 			slot:SetPoint("TOPLEFT", 6, -26 - (s - 1) * 22)
 			view.slots[(g - 1) * SLOTS + s] = slot
 		end
