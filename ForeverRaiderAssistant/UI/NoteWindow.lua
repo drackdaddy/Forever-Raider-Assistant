@@ -1,6 +1,7 @@
 --[[ Note window: shows pushed notes, one tab per note, newest tab selected. It can be moved by its
 title bar and resized from the corner grip, and it remembers both. Each tab has its own close
 button; closing the window closes every tab. "Open in Quick Notes" shows the note in the main window.
+Marker codes in notes draw as icons (Core/Markers.lua).
 Events: none (redrawn through ns.MarkDirty("noteWindow")). SavedVariables: FRA_CharDB.noteWindow. ]]
 
 local _, ns = ...
@@ -70,7 +71,7 @@ local function Refresh(self)
 		tab.key = key
 		tab:SetWidth(width)
 		tab:SetPoint("TOPLEFT", 6 + (i - 1) * width, -TITLE_HEIGHT - 2)
-		tab.text:SetText(ns.Notes.Get(key).title)
+		tab.text:SetText(ns.RenderMarkers(ns.Notes.Get(key).title, 12))
 		ns.SetSelected(tab, key == active)
 		tab:Show()
 	end
@@ -83,7 +84,7 @@ local function Refresh(self)
 	local textWidth = self.scroll:GetWidth()
 	self.child:SetWidth(textWidth)
 	self.body:SetWidth(textWidth)
-	self.body:SetText(note.body)
+	self.body:SetText(ns.RenderMarkers(note.body, 16))
 	self.child:SetHeight(self.body:GetStringHeight() + 24)
 end
 

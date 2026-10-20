@@ -84,5 +84,5 @@ ns.Comm.Register("N", function(sender, payload)
 	ns.db.notes[key] = { key = key, id = id, title = title, body = body, from = sender, time = GetServerTime() }
 	Changed()
 	ns.ShowNoteTab(key)
-	ns.Print(("New note from %s: %s"):format(Ambiguate(sender, "short"), title))
+	ns.Print(("New note from %s: %s"):format(Ambiguate(sender, "short"), ns.RenderMarkers(title, 12)))
 end)

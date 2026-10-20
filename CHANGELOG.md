@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0 - 2026-10-19
+- Quick Notes: target markers ({rt1}-{rt8} or {star}, {circle}, {diamond}, {triangle}, {moon}, {square}, {cross}/{x}, {skull}) and ground markers ({wm1}-{wm8}) in note titles and text, drawn as icons in the note window, note list and chat line. The editor has a marker bar that inserts them at the cursor.
+- Other "|" escape codes in notes now show as typed, so pushed notes can't draw anything but markers.
+
 ## 0.6.0 - 2026-10-19
 - The addon is now a raid-night utility: raid planning is removed (raid catalog and data files for Barrow Deeps, Hyjal Summit, Onyxia's Lair and the Generic raid, boss sheets, the Raids screen, player picker and capability filters).
 - Saved data schema 2: existing raid plans are deleted once on load, and the old Raids screen selection is cleared. Role tags, tools settings and notes are kept.

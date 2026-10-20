@@ -8,7 +8,8 @@ A free, MIT-licensed raid-night utility addon for World of Warcraft: Forever.
   whisper one of your invite words (converting to a raid past 5). Settings per character or
   account-wide.
 - **Quick Notes:** the group leader or an assistant pushes short notes that pop up, in a tabbed
-  window, for every raider running the addon.
+  window, for every raider running the addon. Notes can include target markers ({rt1}-{rt8} or
+  {skull}, {star}...) and ground markers ({wm1}-{wm8}).
 
 ## Install
 
@@ -17,5 +18,5 @@ then type `/fra` in game.
 
 ## Status
 
-Version 0.6.0. Raid planning (boss assignment sheets) was removed to focus on utilities;
+Version 0.7.0. Raid planning (boss assignment sheets) was removed to focus on utilities;
 [the original feature spec](docs/SPEC.md) describes it for reference.

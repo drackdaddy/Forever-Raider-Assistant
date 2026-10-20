@@ -1,6 +1,7 @@
 --[[ Quick Notes screen: a list of your notes and the notes pushed to you (newest first), and an
 editor for the selected note. Your own notes save as you type and can be pushed to the group by its
 leader or an assistant; received notes are read-only. "Show" opens the note in the note window.
+A row of marker buttons inserts target and ground marker codes at the cursor (see Core/Markers.lua).
 Events: none (redrawn through ns.MarkDirty("notes")).
 SavedVariables: FRA_CharDB.ui.note (selected note); FRA_DB.notes through ns.Notes. ]]
 
@@ -50,7 +51,7 @@ local function InitRow(button, note)
 		button:SetScript("OnClick", function(self) SelectNote(self.key) end)
 	end
 	button.key = note.key
-	button.text:SetText(note.title)
+	button.text:SetText(ns.RenderMarkers(note.title, 12))
 	button.badge:SetText(note.from and Ambiguate(note.from, "short") or "You")
 	ns.SetSelected(button, note.key == ns.char.ui.note)
 end
@@ -78,6 +79,7 @@ local function Refresh(self)
 	self.body:SetEnabled(mine)
 	self.count:SetText(("%d / %d"):format(strlenutf8(note.body), Notes.MAX_BODY))
 	self.push:SetShown(mine)
+	self.markerBar:SetShown(mine)
 	self.status:SetText(mine and STATUS[Notes.status[note.key]] or "")
 end
 
@@ -94,7 +96,7 @@ end
 local function BuildBody(editor)
 	local panel = CreateFrame("Frame", nil, editor, "BackdropTemplate")
 	ns.StylePanel(panel, C.field)
-	panel:SetPoint("TOPLEFT", 0, -52)
+	panel:SetPoint("TOPLEFT", 0, -74)
 	panel:SetPoint("BOTTOMRIGHT", 0, 62)
 	local scroll = CreateFrame("ScrollFrame", nil, panel, "ScrollFrameTemplate")
 	scroll:SetPoint("TOPLEFT", 8, -8)
@@ -123,6 +125,53 @@ local function BuildBody(editor)
 	return body
 end
 
+-- Insert a marker code at the body's cursor and save it (Insert is not reported as typing).
+local function InsertCode(code)
+	local note = Selected()
+	if not note or note.from then return end
+	view.body:SetFocus()
+	view.body:Insert(code)
+	Notes.Edit(note, "body", view.body:GetText())
+end
+
+local function ShowMarkerTip(button)
+	GameTooltip:SetOwner(button, "ANCHOR_TOP")
+	GameTooltip:SetText(button.tip)
+	GameTooltip:AddLine("Inserts " .. button.code, 1, 1, 1)
+	GameTooltip:Show()
+end
+
+-- One button per target marker, a gap, then one per ground marker.
+local function BuildMarkerBar(editor)
+	local bar = CreateFrame("Frame", nil, editor)
+	bar:SetPoint("TOPLEFT", 0, -46)
+	bar:SetPoint("RIGHT")
+	bar:SetHeight(22)
+	local x = 0
+	local function Add(code, tip, width)
+		local button = CreateFrame("Button", nil, bar)
+		button:SetSize(width, 22)
+		button:SetPoint("LEFT", x, 0)
+		ns.Fill(button, C.hover, "HIGHLIGHT")
+		local icon = button:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+		icon:SetPoint("CENTER")
+		icon:SetText(ns.RenderMarkers(code, 16))
+		button.code, button.tip = code, tip
+		button:SetScript("OnEnter", ShowMarkerTip)
+		button:SetScript("OnLeave", GameTooltip_Hide)
+		button:SetScript("OnClick", function() InsertCode(code) end)
+		x = x + width + 2
+	end
+	for i = 1, 8 do
+		Add("{rt" .. i .. "}", "Target marker: " .. _G["RAID_TARGET_" .. i], 22)
+	end
+	x = x + 10
+	for i, marker in ipairs(ns.GROUND_MARKERS) do
+		Add("{wm" .. i .. "}", "Ground marker: " .. marker.name, 28)
+	end
+	return bar
+end
+
 local function BuildEditor()
 	local editor = CreateFrame("Frame", nil, view)
 	editor:SetPoint("TOPLEFT", LIST_WIDTH + 16, -56)
@@ -138,6 +187,7 @@ local function BuildEditor()
 	view.title:SetScript("OnEnterPressed", view.title.ClearFocus)
 	view.title:SetScript("OnEscapePressed", view.title.ClearFocus)
 	view.title:SetScript("OnTextChanged", OnEdit("title"))
+	view.markerBar = BuildMarkerBar(editor)
 	view.body = BuildBody(editor)
 
 	view.count = ns.Text(editor, "GameFontHighlightSmall", C.dim)
