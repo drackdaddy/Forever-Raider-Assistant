@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.1 - 2026-10-19
+- Auto invite converts the party to a raid when members plus invites waiting for an answer would pass 5; whispers that arrive while the party is full are invited once the raid forms.
+
 ## 0.3.0 - 2026-10-19
 - Tools screen (new sidebar entry) with per-character options.
 - Combat logging: optionally starts the combat log when you enter a raid instance and asks whether to stop it when you leave.

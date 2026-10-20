@@ -90,7 +90,7 @@ ns.screenBuilders.tools = function(parent)
 	view.listening = Note(inviteCard, -104, "")
 	Note(inviteCard, -124, "Separate words with commas. A whisper must be exactly one of the words; capitals "
 		.. "don't matter. Works when you're solo, party leader, or raid leader or assistant, and pauses "
-		.. "during boss encounters.")
+		.. "during boss encounters. A party that would grow past 5 is converted to a raid.")
 
 	ns.RegisterView("tools", view)
 	return view
